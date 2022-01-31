@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="36fc6094-fd65-481c-9fcc-dad70e5f58ef" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="051e011b-75dd-4f62-9e6f-6fc8f9bc88df" >
+		<http:request-connection host="apisero" />
+	</http:request-config>
+	<flow name="munit_demoFlow" doc:id="f653c9e7-01b6-4ccf-83a8-def8be4398dc" >
+		<http:listener doc:name="Listener" doc:id="03cc3a83-8208-4e78-a96f-ed0897c446ad" config-ref="HTTP_Listener_config" path="/munit-test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="d44d836d-bdcd-4f3e-98cc-5cb3ca4d4cf1" message="Start"/>
+		<ee:transform doc:name="Transform Message" doc:id="ecfc29c1-277a-4bff-8411-b24421ce831c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"isvalid":payload.orderplaced
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="219cc7dd-a737-41fd-9cee-ce7b3bb8198b" >
+			<when expression="#[payload.isvalid]">
+				<http:request method="GET" doc:name="Request" doc:id="b67d4828-17cc-4ed1-8a88-f616a18b22bd" config-ref="HTTP_Request_configuration" path="/test"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="59d2c4f2-b7d0-4039-9090-b079ed13f74e" message="Not Valid"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="059ac1b8-cbfb-40de-8159-9103a9c74fc5" message="End"/>
+	</flow>
+</mule>
