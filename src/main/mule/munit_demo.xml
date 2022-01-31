@@ -24,6 +24,7 @@ output application/java
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="ac919c71-bce6-42bc-9e56-4d9418e46f2c" />
 		<choice doc:name="Choice" doc:id="219cc7dd-a737-41fd-9cee-ce7b3bb8198b" >
 			<when expression="#[payload.isvalid]">
 				<http:request method="GET" doc:name="Request" doc:id="b67d4828-17cc-4ed1-8a88-f616a18b22bd" config-ref="HTTP_Request_configuration" path="/test"/>
